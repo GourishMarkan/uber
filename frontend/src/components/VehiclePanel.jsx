@@ -12,7 +12,7 @@ const VehiclePanel = ({
         className="p-1 text-center w-[93%] absolute top-0"
         onClick={() => {
           // console.log("clicked");
-          setVehiclePanel(false);
+          // setVehiclePanel(false);
         }}
       >
         <i className=" text-3xl text-gray-200 ri-arrow-down-wide-line"></i>

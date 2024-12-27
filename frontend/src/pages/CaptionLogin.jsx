@@ -2,31 +2,46 @@ import axios from "axios";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { setCaption } from "../store/slices/userslice";
 
 const CaptionLogin = () => {
   const [captionDetails, setCaptionDetails] = React.useState({
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = React.useState(false);
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
+      setIsLoading(true);
       const form = new FormData();
       form.append("email", captionDetails.email);
       form.append("password", captionDetails.password);
 
-      const res = await axios.post(`${BASE_URL}/caption/captionLogin`, form, {
-        header: {
-          "Content-Type": "application/json",
-        },
-        withCredentails: true,
-      });
+      // form.append("email", userDetails.email);
+      // form.append("password", userDetails.password);
+      const res = await axios.post(
+        `${BASE_URL}/caption/captionLogin`,
+        captionDetails,
+        {
+          header: {
+            "Content-Type": "application/json",
+            // "Content-Type": "application/json"
+          },
+          withCredentials: true,
+        }
+      );
       if (res.data.success) {
-        setCaptionDetails(res.data.caption);
+        // caption
+        setCaption(res.data.caption);
         toast.success("Caption Login");
-        navigate("/home");
+        setTimeout(() => {
+          navigate("/captain-home");
+          setIsLoading(false);
+        }, 3000);
+        // navigate("/captain-home");
       }
     } catch (error) {
       console.log("error in caption login", error);
@@ -71,7 +86,7 @@ const CaptionLogin = () => {
               className="bg-[#eeeeee] mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base'"
             />
             <button className="bg-[#111] text-white font-semibold mb-3 rounded-lg  px-4 py-2 w-full text-lg placeholder:text-base">
-              Login
+              {isLoading ? "loading" : "login"}
             </button>
           </form>
           <p className="text-center">

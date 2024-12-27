@@ -22,7 +22,7 @@ export const auth = async (req, res, next) => {
 
 export const authCaption = async (req, res, next) => {
   try {
-    const { token } = req.cookies;
+    const token = req.cookies.token;
     // const { token } = req.cookies || req.headers.authorization?.split(" ")[1];
     if (!token) {
       return res.status(401).json({ error: "Unauthorized" });
@@ -34,6 +34,7 @@ export const authCaption = async (req, res, next) => {
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const caption = await Caption.findById(decoded._id);
+    console.log("caption", caption);
     req.caption = caption;
     next();
   } catch (error) {

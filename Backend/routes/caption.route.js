@@ -9,6 +9,6 @@ import { authCaption } from "../middleware/Auth.js";
 const router = express.Router();
 router.post("/captionRegister", registerCaption);
 router.post("/captionLogin", loginCaption);
-router.get("/caption", authCaption, getCaption);
+router.get("/me", authCaption, getCaption);
 router.get("/captionLogout", logoutCaption);
 export default router;

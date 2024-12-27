@@ -6,8 +6,10 @@ import { toast } from "react-toastify";
 const CaptionProtected = ({ children }) => {
   // const [isLoading, setIsLoading] = useState(true);
   const [cookies] = useCookies(["token"]);
+
   const navigate = useNavigate();
   useEffect(() => {
+    console.log("cookies", cookies.token);
     if (!cookies.token) {
       toast.error("You are not authorized to access this page");
       navigate("/captionLogin");

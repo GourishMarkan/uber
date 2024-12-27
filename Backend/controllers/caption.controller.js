@@ -87,12 +87,19 @@ export const loginCaption = async (req, res) => {
   if (!isMatch)
     return res.status(401).json({ error: "Invalid credentials password" });
   const token = await caption.generateJwtToken();
+  // const options = {
+  //   expires: new Date(Date.now() + process.env.COOKIE_EXPIRE * 60 * 60 * 1000),
+  //   httpOnly: false,
+  //   sameSite: "Strict",
+  // };
   const options = {
+    // expires:new Date(Date.now()+process.env.COOKIE_EXPIRE*24*60*60*1000),
     expires: new Date(Date.now() + process.env.COOKIE_EXPIRE * 60 * 60 * 1000),
-    httpOnly: true,
+    // secure: false,
+    httpOnly: false,
+    sameSite: "Strict",
   };
-  res.cookie("token", token, options, { path: "/api/v1/caption" });
-  return res.status(200).json({
+  return res.status(200).cookie("token", token, options, { path: "/" }).json({
     success: true,
     caption: caption,
     message: "Caption logged in successfully",

@@ -11,6 +11,9 @@ import CaptionLogin from "./pages/CaptionLogin";
 import CaptionRegister from "./pages/CaptionRegister";
 import UserProtected from "./pages/UserProtected";
 import Home from "./pages/Home";
+import Riding from "./pages/Riding";
+import { CaptionHome } from "./pages/CaptionHome";
+import CaptionProtected from "./pages/captionProtected";
 
 function App() {
   const router = createBrowserRouter([
@@ -33,12 +36,24 @@ function App() {
       element: <UserSignUp />,
     },
     {
+      path: "/riding",
+      element: <Riding />,
+    },
+    {
       path: "/captionLogin",
       element: <CaptionLogin />,
     },
     {
       path: "/captionSignUp",
       element: <CaptionRegister />,
+    },
+    {
+      path: "/captain-home",
+      element: (
+        <CaptionProtected>
+          <CaptionHome />
+        </CaptionProtected>
+      ),
     },
     {
       path: "/start",

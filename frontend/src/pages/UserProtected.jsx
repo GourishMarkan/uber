@@ -14,7 +14,7 @@ const UserProtected = ({ children }) => {
   // useGetUser();
 
   useEffect(() => {
-    // console.log("cookies", cookies.token);
+    console.log("cookies", cookies.token);
     if (!cookies.token) {
       setIsLoading(false);
       toast.error("You are not authorized to access this page");

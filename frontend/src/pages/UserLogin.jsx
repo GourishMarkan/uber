@@ -4,11 +4,13 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUser } from "../store/slices/userslice";
 import { toast } from "react-toastify";
+
 const UserLogin = () => {
   const [userDetails, setUserDetails] = useState({
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
   // const onChangeHandler = (e) => {
   //   const { name, value } = e.target;
   //   console.log("name", name, value);
@@ -22,6 +24,8 @@ const UserLogin = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
+      setIsLoading(true);
+
       const form = new FormData();
       form.append("email", userDetails.email);
       form.append("password", userDetails.password);
@@ -34,7 +38,11 @@ const UserLogin = () => {
       if (res.data.success) {
         dispatch(setUser(res.data.user));
         toast.success("User Login Success");
-        navigate("/home");
+
+        setTimeout(() => {
+          navigate("/home");
+          setIsLoading(false);
+        }, 2000);
       }
     } catch (error) {
       console.log("error in login", error);
@@ -74,6 +82,9 @@ const UserLogin = () => {
               }}
               className="bg-[#eeeeee] mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base'"
             />
+            {isLoading && (
+              <p className="text-center text-blue-600">...loading</p>
+            )}
             <button className="bg-[#111] text-white font-semibold mb-3 rounded-lg  px-4 py-2 w-full text-lg placeholder:text-base">
               Login
             </button>

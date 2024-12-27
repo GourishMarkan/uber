@@ -21,7 +21,7 @@ const Home = () => {
   const vehicleFoundRef = useRef(null);
   const waitingForDriverRef = useRef(null);
   const [vehiclePanel, setVehiclePanel] = useState(false);
-  const [confirmPanel, setConfirmPanel] = useState(false);
+  const [confirmRidePanel, setConfirmRidePanel] = useState(false);
   const [vehicleFound, setVehicleFound] = useState(false);
   const [waitingForDriver, setWaitingForDriver] = useState(false);
   const [pickupSuggestions, setPickupSuggestions] = useState([
@@ -38,7 +38,7 @@ const Home = () => {
   const [ride, setRide] = useState(null);
 
   const navigate = useNavigate();
-  // useGetUser();
+  useGetUser();
 
   // find trip animate
   useGSAP(
@@ -83,7 +83,7 @@ const Home = () => {
   // confirm panel animate
   useGSAP(
     function () {
-      if (confirmPanel) {
+      if (confirmRidePanel) {
         gsap.to(confirmPanelRef.current, {
           transform: "translateY(0)",
         });
@@ -93,7 +93,7 @@ const Home = () => {
         });
       }
     },
-    [confirmPanel]
+    [confirmRidePanel]
   );
   // vehicle found animate
   useGSAP(
@@ -205,13 +205,13 @@ const Home = () => {
           </div>
           <div
             ref={vehiclePanelRef}
-            className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12"
+            className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
           >
             <VehiclePanel
               setVehiclePanel={setVehiclePanel}
               fare={fare}
-              selectVehicle={setVehicleFound}
-              setConfirmPanel={setConfirmPanel}
+              selectVehicle={setVehicleType}
+              setConfirmPanel={setConfirmRidePanel}
               // activeField={pickup}
             />
           </div>
@@ -225,7 +225,7 @@ const Home = () => {
               destination={destination}
               fare={fare}
               vehicleType={vehicleType}
-              setConfirmRidePanel={setConfirmPanel}
+              setConfirmRidePanel={setConfirmRidePanel}
               setVehicleFound={setVehicleFound}
             />
           </div>
@@ -243,7 +243,7 @@ const Home = () => {
           </div>
           <div
             ref={waitingForDriverRef}
-            className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12"
+            className="fixed w-full z-10 bottom-0  bg-white px-3 py-6 pt-12"
           >
             <WaitingForDriver
               pickup={pickup}

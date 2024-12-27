@@ -10,10 +10,12 @@ const useGetCaption = () => {
   React.useEffect(() => {
     const getCaption = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}.api/v1/caption/me`, {
+        const res = await axios.get(`${BASE_URL}/caption/me`, {
           withCredentials: true,
         });
         if (res.data.success) {
+          console.log("caption", res.data.caption);
+          console.log("caption", res.data.caption);
           dispatch(setCaption(res.data.caption));
         }
       } catch (error) {
@@ -21,7 +23,7 @@ const useGetCaption = () => {
       }
     };
     getCaption();
-  }, [caption]);
+  }, []);
 };
 
 export default useGetCaption;
