@@ -14,6 +14,7 @@ import Home from "./pages/Home";
 import Riding from "./pages/Riding";
 import { CaptionHome } from "./pages/CaptionHome";
 import CaptionProtected from "./pages/captionProtected";
+import CaptainRiding from "./pages/CaptainRiding";
 
 function App() {
   const router = createBrowserRouter([
@@ -52,6 +53,14 @@ function App() {
       element: (
         <CaptionProtected>
           <CaptionHome />
+        </CaptionProtected>
+      ),
+    },
+    {
+      path: "/captain-riding",
+      element: (
+        <CaptionProtected>
+          <CaptainRiding />
         </CaptionProtected>
       ),
     },

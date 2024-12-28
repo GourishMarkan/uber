@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 
 const CaptinDetails = () => {
   const { caption } = useSelector((state) => state.user);
-  console.log(caption);
+  // console.log(caption);
   return (
     <div>
       <div className="flex items-center justify-between">
