@@ -1,9 +1,25 @@
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 const CaptainRiding = () => {
   const [finishRidePanel, setFinalRidePanel] = useState(false);
   const finishRidePanelRef = useRef(null);
+  useGSAP(
+    function () {
+      if (finishRidePanel) {
+        gsap.to(finishRidePanelRef.current, {
+          transform: "translateY(0)",
+        });
+      } else if (!finishRidePanel) {
+        gsap.to(finishRidePanelRef.current, {
+          transform: "translateY(100%)",
+        });
+      }
+    },
+    [finishRidePanel]
+  );
   return (
     <div className="h-screen relative flex flex-col justify-end">
       <div className="fixed p-6 top-0 flex items-center justify-between w-screen">
@@ -32,6 +48,15 @@ const CaptainRiding = () => {
         <button className="bg-green-600 text-white font-semibold p-3 px-10 rounded-lg">
           Complete Ride
         </button>
+      </div>
+      <div
+        ref={finishRidePanelRef}
+        className="fixed w-full z-[500] bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
+      >
+        {/* Finish Ride */}
+      </div>
+      <div className="h-screen fixed w-screen top-0 z-[-1]">
+        {/* livetracking */}
       </div>
     </div>
   );

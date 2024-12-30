@@ -13,6 +13,7 @@ export const auth = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded._id);
     req.user = user;
+    // console.log("Auth middleware - after:", req.query);
     next();
   } catch (error) {
     console.log("error while authenciating", error);
