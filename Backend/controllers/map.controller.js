@@ -55,7 +55,7 @@ export const getAutoCompleteSuggestions = async (req, res) => {
     }
     const { input } = req.query;
     const suggestions = await getAutoCompleteSuggestionsService(input);
-    return res.status(200).json({ succes: "true", suggestions });
+    return res.status(200).json({ success: "true", suggestions });
   } catch (error) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });

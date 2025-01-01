@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "remixicon/fonts/remixicon.css";
 import useGetUser from "../hooks/useGetUser";
 import { useGSAP } from "@gsap/react";
@@ -9,6 +9,10 @@ import { useNavigate } from "react-router-dom";
 import ConfirmRide from "../components/ConfirmRide";
 import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
+
+import { toast } from "react-toastify";
+import axios from "axios";
+import useDebounce from "../hooks/useDebouce";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -24,12 +28,7 @@ const Home = () => {
   const [confirmRidePanel, setConfirmRidePanel] = useState(false);
   const [vehicleFound, setVehicleFound] = useState(false);
   const [waitingForDriver, setWaitingForDriver] = useState(false);
-  const [pickupSuggestions, setPickupSuggestions] = useState([
-    "Mumbai",
-    "Delhi",
-    "Bangalore",
-    "Kolkata",
-  ]);
+  const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [activeField, setActiveField] = useState(null);
 
@@ -40,6 +39,73 @@ const Home = () => {
   const navigate = useNavigate();
   useGetUser();
 
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  const debouncedPickup = useDebounce(pickup, 500);
+  const debouncedDestination = useDebounce(destination, 500);
+  useEffect(() => {
+    if (debouncedPickup) {
+      // checking if active field is pickup or destination
+      //  activeField === pickup ? handlePickUpChange(pic) : "destination";
+      handlePickupChange(debouncedPickup);
+    }
+    // if (debouncedDestination) {
+    //   handleDestinationChange(debouncedDestination);
+    // }
+  }, [debouncedPickup]);
+  useEffect(() => {
+    // if (debouncedPickup) {
+    //   // checking if active field is pickup or destination
+    //   //  activeField === pickup ? handlePickUpChange(pic) : "destination";
+    //   handlePickupChange(debouncedPickup);
+    // }
+    if (debouncedDestination) {
+      handleDestinationChange(debouncedDestination);
+    }
+  }, [debouncedDestination]);
+
+  const handlePickupChange = async (pickup) => {
+    // setPickup(e.target.value);
+    // console.log("pickup", pickup);
+    if (pickup.length >= 3) {
+      try {
+        const res = await axios.get(`${BASE_URL}/maps/get-suggestions`, {
+          // params: { input: pickup },
+          params: { input: pickup },
+          withCredentials: true,
+        });
+        if (res.data.success) {
+          setPickupSuggestions(res.data.suggestions);
+        }
+      } catch (error) {
+        console.log("error in handlePickupChange", error);
+        toast.error("error in handlePickupChange", error);
+        setPickupSuggestions([]);
+      }
+    }
+  };
+  // function for destination fetch
+  const fetchDestination = async (destination) => {
+    try {
+      const res = await axios.get(`${BASE_URL}/maps/get-suggestions`, {
+        // params: { input: pickup },
+        params: { input: destination },
+        withCredentials: true,
+      });
+      if (res.data.success) {
+        setDestinationSuggestions(res.data.suggestions);
+      }
+    } catch (error) {
+      console.log("error in handleDestinationChange", error);
+      toast.error("error in handleDestinationChange", error);
+      setDestinationSuggestions([]);
+    }
+  };
+  const handleDestinationChange = async (destination) => {
+    // setDestination(e.target.value);
+    if (destination.length >= 3) {
+      fetchDestination(destination);
+    }
+  };
   // find trip animate
   useGSAP(
     function () {
@@ -125,18 +191,49 @@ const Home = () => {
     },
     [waitingForDriver]
   );
-  const handlePickupChange = async (e) => {
-    setPickup(e.target.value);
-  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
   };
 
-  const handleDestinationChange = async (e) => {
-    setDestination(e.target.value);
+  const findTrip = async () => {
+    setVehiclePanel(true);
+    setPanelOpen(false);
+    try {
+      const res = await axios.get(`${BASE_URL}/rides/get-fare`, {
+        params: {
+          pickup,
+          destination,
+        },
+        withCredentials: true,
+      });
+      setFare(res.data.fare);
+    } catch (error) {
+      console.log("error in findTrip", error);
+      toast.error("error in findTrip", error);
+      setFare({});
+    }
   };
 
-  const findTrip = async () => {};
+  const createRide = async () => {
+    try {
+      await axios.post(
+        `${BASE_URL}/rides/createRide`,
+        {
+          pickup,
+          destination,
+
+          vehicleType,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+    } catch (error) {
+      console.log("error in createRide", error);
+      toast.error("error in createRide", error);
+    }
+  };
   return (
     <div className="md:flex  md:items-center md:justify-center h-screen w-screen ">
       <div className="  flex  flex-col items-center justify-center h-screen w-screen ">
@@ -167,9 +264,11 @@ const Home = () => {
                 <input
                   onClick={() => {
                     setPanelOpen(true);
+                    setActiveField("pickup");
                   }}
                   type="text"
-                  onChange={handlePickupChange}
+                  // onChange={handlePickupChange}
+                  onChange={(e) => setPickup(e.target.value)}
                   value={pickup}
                   className="bg-gray-200 px-12 py-2 text-lg  rounded-lg w-full"
                   placeholder="Add a pick-up location"
@@ -177,10 +276,12 @@ const Home = () => {
                 <input
                   onClick={() => {
                     setPanelOpen(true);
+                    setActiveField("destination");
                   }}
                   type="text"
                   value={destination}
-                  onChange={handleDestinationChange}
+                  // onChange={handleDestinationChange}
+                  onChange={(e) => setDestination(e.target.value)}
                   className="bg-gray-200 px-12 py-2 text-lg  rounded-lg w-full mt-3"
                   placeholder="Enter your destination"
                 />
@@ -194,12 +295,14 @@ const Home = () => {
             </div>
             <div className="bg-white h-0 " ref={panelRef}>
               <LocationSearchPanel
-                suggestions={pickupSuggestions}
-                setPanelOpen={setPanelOpen}
+                suggestions={
+                  activeField === "pickup"
+                    ? pickupSuggestions
+                    : destinationSuggestions
+                }
                 setPickup={setPickup}
                 setDestination={setDestination}
-                activeField={pickup}
-                setVehiclePanel={setVehiclePanel}
+                activeField={activeField}
               />
             </div>
           </div>

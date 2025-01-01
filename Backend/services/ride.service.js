@@ -2,14 +2,11 @@ import { Ride } from "../models/ride.model.js";
 import { getDistanceTimeService } from "./maps.service.js";
 import crypto from "crypto";
 
-async function getFare(pickup, destination) {
+export async function getFare(pickup, destination) {
   if (!pickup || !destination) {
     throw new Error("pickup and destination are required");
   }
-  const distanceTime = await mapService.getDistanceTimeService(
-    pickup,
-    destination
-  );
+  const distanceTime = await getDistanceTimeService(pickup, destination);
 
   const baseFare = {
     auto: 30,
@@ -59,18 +56,19 @@ function getOtp(num) {
 }
 
 export const createRideService = async ({
-  user,
+  userId,
   pickup,
   destination,
   vehicleType,
 }) => {
-  if (!user || !pickup || !destination || !vehicleType) {
+  console.log(userId, pickup, destination, vehicleType);
+  if (!userId || !pickup || !destination || !vehicleType) {
     throw new Error("All fields are required");
   }
   const fare = await getFare(pickup, destination);
 
   const ride = await Ride.create({
-    user,
+    user: userId,
     pickup,
     destination,
     otp: getOtp(6),

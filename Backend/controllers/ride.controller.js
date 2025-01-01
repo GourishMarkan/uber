@@ -8,13 +8,24 @@ export const createRide = async (req, res) => {
   }
 
   try {
-    const { userId, destination, pickup, vehicleType } = req.body;
-    const ride = await createRideService(
+    const userId = req.user._id;
+    const { destination, pickup, vehicleType } = req.body;
+    // console.log(
+    //   "userId",
+    //   userId,
+    //   "destination",
+    //   destination,
+    //   "pickup",
+    //   pickup,
+    //   "vehicleType",
+    //   vehicleType
+    // );
+    const ride = await createRideService({
       userId,
-      destination,
       pickup,
-      vehicleType
-    );
+      destination,
+      vehicleType,
+    });
     return res.status(200).json({ success: "true", ride });
   } catch (error) {
     console.log("error in createRide", error);

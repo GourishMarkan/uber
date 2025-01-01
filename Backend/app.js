@@ -27,5 +27,5 @@ import RideRouter from "./routes/ride.route.js";
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/caption", captionRouter);
 app.use("/api/v1/maps", mapRouter);
-app.use("/api/v1/ride", RideRouter);
+app.use("/api/v1/rides", RideRouter);
 export default app;

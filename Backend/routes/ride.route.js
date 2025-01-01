@@ -1,10 +1,11 @@
 import express from "express";
 import { body } from "express-validator";
 import { auth } from "../middleware/Auth.js";
+import { createRide } from "../controllers/ride.controller.js";
 const router = express.Router();
 
 router.post(
-  "/create",
+  "/createRide",
   auth,
   body("pickup")
     .isString()
@@ -17,6 +18,7 @@ router.post(
   body("vehicleType")
     .isString()
     .isIn(["car", "auto", "moto"])
-    .withMessage("invalid vehicle type")
+    .withMessage("invalid vehicle type"),
+  createRide
 );
 export default router;
