@@ -1,8 +1,9 @@
+import { validationResult } from "express-validator";
 import { Ride } from "../models/ride.model.js";
 import { getDistanceTimeService } from "./maps.service.js";
 import crypto from "crypto";
 
-export async function getFare(pickup, destination) {
+export async function getFareService(pickup, destination) {
   if (!pickup || !destination) {
     throw new Error("pickup and destination are required");
   }
@@ -65,7 +66,7 @@ export const createRideService = async ({
   if (!userId || !pickup || !destination || !vehicleType) {
     throw new Error("All fields are required");
   }
-  const fare = await getFare(pickup, destination);
+  const fare = await getFareService(pickup, destination);
 
   const ride = await Ride.create({
     user: userId,
@@ -77,3 +78,5 @@ export const createRideService = async ({
 
   return ride;
 };
+
+export const confirmRideService = async ({ rideId, captain }) => {};

@@ -330,6 +330,7 @@ const Home = () => {
               vehicleType={vehicleType}
               setConfirmRidePanel={setConfirmRidePanel}
               setVehicleFound={setVehicleFound}
+              createRide={createRide}
             />
           </div>
           <div
