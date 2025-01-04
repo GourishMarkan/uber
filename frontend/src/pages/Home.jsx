@@ -13,6 +13,9 @@ import WaitingForDriver from "../components/WaitingForDriver";
 import { toast } from "react-toastify";
 import axios from "axios";
 import useDebounce from "../hooks/useDebouce";
+import { useDispatch, useSelector } from "react-redux";
+import { setSocket } from "../store/slices/socketSlice";
+import { io } from "socket.io-client";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -63,6 +66,28 @@ const Home = () => {
     }
   }, [debouncedDestination]);
 
+  // const { user } = useSelector((state) => state.user);
+  const { socket } = useSelector((state) => state.socketio);
+  // const BASE_URL = import.meta.env.VITE_BASE_URL;
+  // const dispatch = useDispatch();
+  // useEffect(() => {
+  //   if (user) {
+  //     const socketio = io(`${BASE_URL}`);
+  //     dispatch(setSocket(socketio));
+
+  //     socketio.on("connect", () => {
+  //       console.log("Connected to server");
+  //     });
+
+  //     // return () => {
+  //     //   socketio.close();
+  //     //   dispatch(setSocket(null));
+  //     // };
+  //   } else if (socket) {
+  //     socket.close();
+  //     dispatch(setSocket(null));
+  //   }
+  // }, [user, dispatch]);
   const handlePickupChange = async (pickup) => {
     // setPickup(e.target.value);
     // console.log("pickup", pickup);

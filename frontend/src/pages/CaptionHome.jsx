@@ -8,7 +8,7 @@ import gsap from "gsap";
 import ConfirmRidePopUpPanel from "../components/ConfirmRidePopUpPanel";
 
 export const CaptionHome = () => {
-  // useGetCaption();
+  useGetCaption();
   const [ridePopupPanel, setRidePopupPanel] = useState(false);
   const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false);
   const ridePopupPanelRef = useRef(null);

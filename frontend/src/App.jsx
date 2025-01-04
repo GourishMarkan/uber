@@ -15,70 +15,96 @@ import Riding from "./pages/Riding";
 import { CaptionHome } from "./pages/CaptionHome";
 import CaptionProtected from "./pages/captionProtected";
 import CaptainRiding from "./pages/CaptainRiding";
-
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { io } from "socket.io-client";
+import { setSocket } from "./store/slices/socketSlice";
+const router = createBrowserRouter([
+  {
+    path: "/",
+    // element: <Outlet />,
+    element: <Start />,
+    // children: [
+    //   {
+    //     path: "/start",
+    //     element: <Start />,
+    //   },
+  },
+  {
+    path: "/userLogin",
+    element: <UserLogin />,
+  },
+  {
+    path: "/userSignUp",
+    element: <UserSignUp />,
+  },
+  {
+    path: "/riding",
+    element: <Riding />,
+  },
+  {
+    path: "/captionLogin",
+    element: <CaptionLogin />,
+  },
+  {
+    path: "/captionSignUp",
+    element: <CaptionRegister />,
+  },
+  {
+    path: "/captain-home",
+    element: (
+      <CaptionProtected>
+        <CaptionHome />
+      </CaptionProtected>
+    ),
+  },
+  {
+    path: "/captain-riding",
+    element: (
+      <CaptionProtected>
+        <CaptainRiding />
+      </CaptionProtected>
+    ),
+  },
+  {
+    path: "/start",
+    element: <Start />,
+  },
+  {
+    path: "/home",
+    element: (
+      <UserProtected>
+        <Home />
+      </UserProtected>
+    ),
+  },
+  // ],
+  // },
+]);
 function App() {
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      // element: <Outlet />,
-      element: <Start />,
-      // children: [
-      //   {
-      //     path: "/start",
-      //     element: <Start />,
-      //   },
-    },
-    {
-      path: "/userLogin",
-      element: <UserLogin />,
-    },
-    {
-      path: "/userSignUp",
-      element: <UserSignUp />,
-    },
-    {
-      path: "/riding",
-      element: <Riding />,
-    },
-    {
-      path: "/captionLogin",
-      element: <CaptionLogin />,
-    },
-    {
-      path: "/captionSignUp",
-      element: <CaptionRegister />,
-    },
-    {
-      path: "/captain-home",
-      element: (
-        <CaptionProtected>
-          <CaptionHome />
-        </CaptionProtected>
-      ),
-    },
-    {
-      path: "/captain-riding",
-      element: (
-        <CaptionProtected>
-          <CaptainRiding />
-        </CaptionProtected>
-      ),
-    },
-    {
-      path: "/start",
-      element: <Start />,
-    },
-    {
-      path: "/home",
-      element: (
-        <UserProtected>
-          <Home />
-        </UserProtected>
-      ),
-    },
-    // ],
-    // },
-  ]);
+  const { user, caption } = useSelector((state) => state.user);
+  // const { socket } = useSelector((state) => state.socketio);
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (user || caption) {
+      const socketio = io(`${BASE_URL}`);
+      dispatch(setSocket(socketio));
+
+      socketio.on("connect", () => {
+        console.log("Connected to server");
+      });
+
+      return () => {
+        socketio.close();
+        dispatch(setSocket(null));
+      };
+    }
+    // else if (socket) {
+    //   socket.close();
+    //   dispatch(setSocket(null));
+    // }
+  }, [user, dispatch, caption]);
   return (
     <>
       <RouterProvider router={router} />

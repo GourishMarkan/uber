@@ -40,7 +40,7 @@ const CaptionLogin = () => {
         setTimeout(() => {
           navigate("/captain-home");
           setIsLoading(false);
-        }, 3000);
+        }, 5000);
         // navigate("/captain-home");
       }
     } catch (error) {
