@@ -64,7 +64,7 @@ const RidePopup = ({
               console.log("confirm ride");
               setConfirmRidePopupPanel(true);
               // setRidePopupPanel(false);
-              // confirmRide();
+              confirmRide();
             }}
             className="w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-lg "
           >

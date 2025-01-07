@@ -42,7 +42,7 @@ const UserLogin = () => {
         setTimeout(() => {
           navigate("/home");
           setIsLoading(false);
-        }, 2000);
+        }, 6000);
       }
     } catch (error) {
       console.log("error in login", error);

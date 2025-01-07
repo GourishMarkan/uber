@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import CaptinDetails from "../components/CaptinDetails";
 import useGetCaption from "../hooks/useGetCaption";
@@ -6,6 +6,7 @@ import RidePopup from "../components/RidePopup";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import ConfirmRidePopUpPanel from "../components/ConfirmRidePopUpPanel";
+import { useSelector } from "react-redux";
 
 export const CaptionHome = () => {
   useGetCaption();
@@ -13,6 +14,7 @@ export const CaptionHome = () => {
   const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false);
   const ridePopupPanelRef = useRef(null);
   const confirmRidePopupPanelRef = useRef(null);
+  const [ride, setRide] = useState(null);
   // to open and close ride popup
   // useGSAP(
   //   function () {
@@ -30,6 +32,37 @@ export const CaptionHome = () => {
   //   },
   //   [ridePopupPanel]
   // );
+  const { caption } = useSelector((state) => state.user);
+  const { socket } = useSelector((state) => state.socketio);
+
+  useEffect(() => {
+    socket?.emit("join", { userType: "caption", userId: caption._id });
+
+    const updateLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const location = {
+            ltd: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          socket.emit("update-location-captain", {
+            userId: caption._id,
+            location,
+          });
+        });
+      }
+    };
+    const locationInterval = setInterval(updateLocation, 10000);
+    // check if the user has allowed location access
+    // locationInterval();
+
+    return () => clearInterval(locationInterval);
+  }, [caption]);
+
+  socket.on("new-ride", (ride) => {
+    setRide(ride);
+    setRidePopupPanel(true);
+  });
   useGSAP(
     function () {
       if (ridePopupPanel) {
@@ -74,7 +107,7 @@ export const CaptionHome = () => {
     },
     [confirmRidePopupPanel]
   );
-
+  const confirmRide = async () => {};
   return (
     <div className="h-screen">
       <div className="fixed p-6 top-0 flex items-center justify-between w-screen">
@@ -110,6 +143,7 @@ export const CaptionHome = () => {
       >
         {/* ridepopUp */}
         <RidePopup
+          ride={ride}
           setRidePopupPanel={setRidePopupPanel}
           setConfirmRidePopupPanel={setConfirmRidePopupPanel}
         />

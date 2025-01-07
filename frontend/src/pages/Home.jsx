@@ -41,10 +41,22 @@ const Home = () => {
 
   const navigate = useNavigate();
   useGetUser();
-
+  const { user } = useSelector((state) => state.user);
+  // const { socket } = useSelector((state) => state.socketio);
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
   const debouncedPickup = useDebounce(pickup, 500);
   const debouncedDestination = useDebounce(destination, 500);
+
+  const { socket } = useSelector((state) => state.socketio);
+  useEffect(() => {
+    socket.emit("join", { userType: "user", userId: user._id });
+  }, [user]);
+
+  socket.on("ride-confirmed", (ride) => {
+    setVehicleFound(false);
+    setWaitingForDriver(true);
+    setRide(ride);
+  });
   useEffect(() => {
     if (debouncedPickup) {
       // checking if active field is pickup or destination
@@ -67,7 +79,6 @@ const Home = () => {
   }, [debouncedDestination]);
 
   // const { user } = useSelector((state) => state.user);
-  const { socket } = useSelector((state) => state.socketio);
   // const BASE_URL = import.meta.env.VITE_BASE_URL;
   // const dispatch = useDispatch();
   // useEffect(() => {

@@ -1,5 +1,16 @@
-import { createRideService, getFareService } from "../services/ride.service.js";
+import {
+  confirmRideService,
+  createRideService,
+  getFareService,
+} from "../services/ride.service.js";
 import { validationResult } from "express-validator";
+import { getCoordinates } from "./map.controller.js";
+import {
+  getAddressCoordinateService,
+  getCaptainsInTheRadiusService,
+} from "../services/maps.service.js";
+import { sendMessageToSocketId } from "../socket.js";
+import { Ride } from "../models/ride.model.js";
 
 export const createRide = async (req, res) => {
   const errors = validationResult(req);
@@ -26,7 +37,29 @@ export const createRide = async (req, res) => {
       destination,
       vehicleType,
     });
-    return res.status(200).json({ success: "true", ride });
+    res.status(200).json({ success: "true", ride });
+
+    const pickupCoordinates = await getAddressCoordinateService(pickup);
+
+    const captainsInRadius = await getCaptainsInTheRadiusService(
+      pickupCoordinates.ltd,
+      pickupCoordinates.lng,
+      2
+    );
+
+    ride.otp = "";
+
+    const rideWithUser = await Ride.findOne({ _id: ride._id }).populate(
+      "userId"
+    );
+
+    captainsInRadius.map((captain) =>
+      sendMessageToSocketId(captain.socketId, {
+        event: "new-ride",
+        data: rideWithUser,
+      })
+    );
+    // return
   } catch (error) {
     console.log("error in createRide", error);
     return res.status(500).json({ error: "Internal Server Error:", error });
@@ -64,8 +97,17 @@ export const confirmRide = async (req, res) => {
       errors: errors.array(),
     });
   }
+  const { rideId } = req.body;
   try {
-    // const ride=await
+    const ride = await confirmRideService({ rideId, captain: req.user._id });
+    sendMessageToSocketId(ride.user.socketId, {
+      event: "ride-confirmed",
+      data: ride,
+    });
+    return res.status(200).json({
+      success: true,
+      ride,
+    });
   } catch (error) {
     console.log("error in confirmRide", error);
     return res.status(500).json({
