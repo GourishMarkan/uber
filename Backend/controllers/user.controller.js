@@ -79,7 +79,7 @@ export const login = async (req, res) => {
     expires: new Date(Date.now() + process.env.COOKIE_EXPIRE * 60 * 60 * 1000),
     // secure: false,
     httpOnly: false,
-    sameSite: "Strict",
+    sameSite: "Lax",
   };
   res.status(200).cookie("token", token, options, { path: "/" }).json({
     success: true,

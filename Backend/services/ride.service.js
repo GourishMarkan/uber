@@ -8,6 +8,7 @@ export async function getFareService(pickup, destination) {
     throw new Error("pickup and destination are required");
   }
   const distanceTime = await getDistanceTimeService(pickup, destination);
+  console.log("distanceTime:", distanceTime);
 
   const baseFare = {
     auto: 30,

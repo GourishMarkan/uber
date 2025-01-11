@@ -15,7 +15,7 @@ const useGetCaption = () => {
         });
         if (res.data.success) {
           console.log("caption", res.data.caption);
-          console.log("caption", res.data.caption);
+          // console.log("caption", res.data.caption);
           dispatch(setCaption(res.data.caption));
         }
       } catch (error) {

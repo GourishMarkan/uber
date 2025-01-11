@@ -7,7 +7,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import ConfirmRidePopUpPanel from "../components/ConfirmRidePopUpPanel";
 import { useSelector } from "react-redux";
-
+import axios from "axios";
 export const CaptionHome = () => {
   useGetCaption();
   const [ridePopupPanel, setRidePopupPanel] = useState(false);
@@ -15,37 +15,23 @@ export const CaptionHome = () => {
   const ridePopupPanelRef = useRef(null);
   const confirmRidePopupPanelRef = useRef(null);
   const [ride, setRide] = useState(null);
-  // to open and close ride popup
-  // useGSAP(
-  //   function () {
-  //     if (ridePopupPanel) {
 
-  //       gsap.to(ridePopupPanelRef.current, {
-  //         transform: "translateY(0)",
-  //       });
-  //     } else {
-
-  //       gsap.to(ridePopupPanelRef.current, {
-  //         transform: "translateY(100)%",
-  //       });
-  //     }
-  //   },
-  //   [ridePopupPanel]
-  // );
   const { caption } = useSelector((state) => state.user);
   const { socket } = useSelector((state) => state.socketio);
-
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  console.log("caption", caption);
   useEffect(() => {
     socket?.emit("join", { userType: "caption", userId: caption._id });
 
     const updateLocation = () => {
+      console.log("updating location");
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
           const location = {
             ltd: position.coords.latitude,
             lng: position.coords.longitude,
           };
-          socket.emit("update-location-captain", {
+          socket?.emit("update-location-captain", {
             userId: caption._id,
             location,
           });
@@ -53,13 +39,14 @@ export const CaptionHome = () => {
       }
     };
     const locationInterval = setInterval(updateLocation, 10000);
+
     // check if the user has allowed location access
     // locationInterval();
 
     return () => clearInterval(locationInterval);
   }, [caption]);
 
-  socket.on("new-ride", (ride) => {
+  socket?.on("new-ride", (ride) => {
     setRide(ride);
     setRidePopupPanel(true);
   });
@@ -78,21 +65,6 @@ export const CaptionHome = () => {
     [ridePopupPanel]
   );
 
-  // to open and close confirm ride popup
-  // useGSAP(
-  //   function () {
-  //     if (confirmRidePopupPanel) {
-  //       gsap.to(confirmRidePopupPanelRef.current, {
-  //         transform: "translateY(0)",
-  //       });
-  //     } else if (!confirmRidePopupPanel) {
-  //       gsap.to(confirmRidePopupPanelRef.current, {
-  //         transform: "translateY(100%)",
-  //       });
-  //     }
-  //   },
-  //   [confirmRidePopupPanel]
-  // );
   useGSAP(
     function () {
       if (confirmRidePopupPanel) {
@@ -107,7 +79,23 @@ export const CaptionHome = () => {
     },
     [confirmRidePopupPanel]
   );
-  const confirmRide = async () => {};
+  console.log("ride", ride);
+  const confirmRide = async () => {
+    const res = await axios.post(
+      `${BASE_URL}/rides/comfirm-ride`,
+      {
+        rideId: ride._id,
+        captainId: caption._id,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    if (res.data.success) {
+      setConfirmRidePopupPanel(true);
+      setRidePopupPanel(false);
+    }
+  };
   return (
     <div className="h-screen">
       <div className="fixed p-6 top-0 flex items-center justify-between w-screen">
@@ -146,6 +134,7 @@ export const CaptionHome = () => {
           ride={ride}
           setRidePopupPanel={setRidePopupPanel}
           setConfirmRidePopupPanel={setConfirmRidePopupPanel}
+          confirmRide={confirmRide}
         />
       </div>
       <div
@@ -154,6 +143,7 @@ export const CaptionHome = () => {
       >
         {/* confirm Ride */}
         <ConfirmRidePopUpPanel
+          ride={ride}
           setConfirmRidePopupPanel={setConfirmRidePopupPanel}
           setRidePopupPanel={setRidePopupPanel}
         />

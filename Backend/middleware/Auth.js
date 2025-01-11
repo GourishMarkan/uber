@@ -23,6 +23,7 @@ export const auth = async (req, res, next) => {
 
 export const authCaption = async (req, res, next) => {
   try {
+    console.log("authCaptain", req.cookies);
     const token = req.cookies.token;
     // const { token } = req.cookies || req.headers.authorization?.split(" ")[1];
     if (!token) {

@@ -9,7 +9,9 @@ const CaptionProtected = ({ children }) => {
 
   const navigate = useNavigate();
   useEffect(() => {
-    console.log("cookies", cookies.token);
+    // console.log("cookies", cookies.token);
+    console.log("Cookies object:", cookies);
+    console.log("Token from cookies:", cookies.token);
     if (!cookies.token) {
       toast.error("You are not authorized to access this page");
       navigate("/captionLogin");

@@ -46,12 +46,10 @@ export const createRide = async (req, res) => {
       pickupCoordinates.lng,
       2
     );
-
+    console.log("captainsInRadius", captainsInRadius);
     ride.otp = "";
 
-    const rideWithUser = await Ride.findOne({ _id: ride._id }).populate(
-      "userId"
-    );
+    const rideWithUser = await Ride.findOne({ _id: ride._id }).populate("user");
 
     captainsInRadius.map((captain) =>
       sendMessageToSocketId(captain.socketId, {
@@ -59,6 +57,8 @@ export const createRide = async (req, res) => {
         data: rideWithUser,
       })
     );
+
+    //  );
     // return
   } catch (error) {
     console.log("error in createRide", error);
