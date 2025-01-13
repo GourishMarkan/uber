@@ -13,7 +13,7 @@ import UserProtected from "./pages/UserProtected";
 import Home from "./pages/Home";
 import Riding from "./pages/Riding";
 import { CaptionHome } from "./pages/CaptionHome";
-import CaptionProtected from "./pages/captionProtected";
+import CaptionProtected from "./pages/CaptionProtected";
 import CaptainRiding from "./pages/CaptainRiding";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";

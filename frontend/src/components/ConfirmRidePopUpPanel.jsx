@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const ConfirmRidePopUpPanel = ({
   setRidePopupPanel,
@@ -8,9 +9,22 @@ const ConfirmRidePopUpPanel = ({
 }) => {
   const [otp, setOtp] = useState("");
   const navigate = useNavigate();
-  const submitHandler = (e) => {
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  const submitHandler = async (e) => {
     e.preventDefault();
-    navigate("/captain-riding");
+
+    const res = await axios.get(`${BASE_URL}/rides/start-ride`, {
+      params: {
+        rideId: ride._id,
+        otp: otp,
+      },
+      withCredentials: true,
+    });
+    if (res.data.status === 200) {
+      props.setConfirmRidePopupPanel(false);
+      props.setRidePopupPanel(false);
+      navigate("/captain-riding", { state: { ride: props.ride } });
+    }
   };
   return (
     <div>
