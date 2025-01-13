@@ -100,3 +100,53 @@ export const confirmRideService = async ({ rideId, captain }) => {
 
   return ride;
 };
+
+export const startRideService = async ({ rideId, otp, captain }) => {
+  if (!rideId || !otp || !captain) throw new Error("All fields are required");
+  const ride = await Ride.findOne({ _id: rideId })
+    .populate("captain")
+    .select("+otp");
+
+  if (!ride) {
+    throw new Error("Ride not found");
+  }
+  if (ride.status !== "accepted") {
+    throw new Error("Ride not accepted yet");
+  }
+  if (ride.otp !== otp) {
+    throw new Error("Invalid OTP");
+  }
+  await Ride.findOneAndUpdate(
+    { _id: rideId },
+    {
+      status: "ongoing",
+    }
+  );
+  return ride;
+};
+
+export const endRideService = async ({ rideId, captain }) => {
+  if (!rideId || !captain) throw new Error("All fields are required");
+  const ride = await Ride.findOne({ _id: rideId, captain: captain._id })
+    .populate("captain")
+    .populate("user")
+    .select("+otp");
+
+  if (!ride) {
+    throw new Error("Ride not found");
+  }
+  if (ride.status !== "ongoing") {
+    throw new Error("Ride not ongoing");
+  }
+
+  await Ride.findOneAndUpdate(
+    {
+      _id: rideId,
+    },
+    {
+      status: "completed",
+    }
+  );
+
+  return ride;
+};

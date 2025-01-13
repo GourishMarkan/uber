@@ -1,7 +1,9 @@
 import {
   confirmRideService,
   createRideService,
+  endRideService,
   getFareService,
+  startRideService,
 } from "../services/ride.service.js";
 import { validationResult } from "express-validator";
 import { getCoordinates } from "./map.controller.js";
@@ -114,5 +116,54 @@ export const confirmRide = async (req, res) => {
       success: false,
       message: error.message,
     });
+  }
+};
+
+export const startRide = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
+
+  const { rideId, otp } = req.query;
+  try {
+    const ride = await startRideService({
+      rideId,
+      otp,
+      captain: req.caption._id,
+    });
+
+    sendMessageToSocketId(ride.user.socketId, {
+      event: "ride-started",
+      data: ride,
+    });
+    return res.status(200).json(ride);
+  } catch (error) {
+    console.log("error in startRide", error);
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+export const endRide = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
+  const { rideId } = req.body;
+  try {
+    const ride = await endRideService({ rideId, captain: req.caption._id });
+    sendMessageToSocketId(ride.user.socketId, {
+      event: "ride-ended",
+      data: ride,
+    });
+  } catch (error) {
+    console.log("error in endRide", error);
+    return res.status(500).json({ message: error.message });
   }
 };

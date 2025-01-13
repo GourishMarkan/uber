@@ -4,7 +4,9 @@ import { auth, authCaption } from "../middleware/Auth.js";
 import {
   confirmRide,
   createRide,
+  endRide,
   getFare,
+  startRide,
 } from "../controllers/ride.controller.js";
 const router = express.Router();
 
@@ -45,5 +47,22 @@ router.post(
   authCaption,
   body("rideId").isMongoId().withMessage("invalid ride id"),
   confirmRide
+);
+router.get(
+  "/start-ride",
+  authCaption,
+  query("rideId").isMongoId().withMessage("invalid ride id"),
+  query("otp")
+    .isString()
+    .isLength({ min: 6, max: 6 })
+    .withMessage("Invalid OTP"),
+  startRide
+);
+
+router.post(
+  "/end-ride",
+  authCaption,
+  body("rideId").isMongoId().withMessage("invalid ride id"),
+  endRide
 );
 export default router;
